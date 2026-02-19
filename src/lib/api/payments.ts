@@ -14,6 +14,7 @@ export interface Subscription {
   status: "active" | "past_due" | "cancelled" | "trialing";
   current_period_end: string;
   plan: SubscriptionPlan;
+  plan_name?: string;
 }
 
 export const paymentsApi = {
