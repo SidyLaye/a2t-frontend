@@ -8,11 +8,8 @@ services:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     restart: unless-stopped
-    networks:
-      - dokploy-network
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dokploy-network"
       - "traefik.http.routers.mourad-frontend.rule=Host(`mourad-frontend-kdtphq-252ff4-51-178-81-232.traefik.me`)"
       - "traefik.http.routers.mourad-frontend.entrypoints=web"
       - "traefik.http.services.mourad-frontend.loadbalancer.server.port=3000"
@@ -22,7 +19,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-
-networks:
-  dokploy-network:
-    external: true
