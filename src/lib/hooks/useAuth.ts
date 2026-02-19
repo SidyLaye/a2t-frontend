@@ -31,15 +31,24 @@ export function useAuth() {
       // Set cookie for middleware
       document.cookie = `a2t-access-token=${tokens.access}; path=/; max-age=86400; SameSite=Lax`;
 
-      // Auto-select first tenant if none selected
+      // Check if user is an accountant or has multiple companies
       const roles = useAuthStore.getState().entrepreneurRoles;
       const tenantIds = Object.keys(roles);
-      if (tenantIds.length > 0 && !activeEntrepreneurId) {
-        setActiveTenant(tenantIds[0]);
-      }
+      const isAccountant = Object.values(roles).some((role) => role === "accountant");
 
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.me });
-      router.push("/dashboard");
+
+      if (tenantIds.length > 1 || isAccountant) {
+        // Go to Hub to select dossier
+        router.push("/hub");
+      } else if (tenantIds.length === 1) {
+        // Only one company, auto-select and go to dashboard
+        setActiveTenant(tenantIds[0]);
+        router.push("/dashboard");
+      } else {
+        // No company yet, go to dashboard (will show empty state or onboarding)
+        router.push("/dashboard");
+      }
     },
     onError: () => {
       toast.error("Email ou mot de passe incorrect");
@@ -62,7 +71,7 @@ export function useAuth() {
   const logout = () => {
     const refreshToken = useAuthStore.getState().refreshToken;
     if (refreshToken) {
-      authApi.logout(refreshToken).catch(() => {});
+      authApi.logout(refreshToken).catch(() => { });
     }
     storeLogout();
     clearTenant();

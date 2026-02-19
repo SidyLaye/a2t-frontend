@@ -23,4 +23,7 @@ export const dashboardApi = {
 
   overdueInvoices: () =>
     apiClient.get<Invoice[]>(`${BASE}/overdue-invoices/`).then((r) => r.data),
+
+  predictive: (days?: number) =>
+    apiClient.get<any[]>(`${BASE}/predictive/`, { params: { days } }).then((r) => r.data),
 };

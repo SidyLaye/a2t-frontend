@@ -6,8 +6,16 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { useUIStore } from "@/lib/stores/ui.store";
 import { cn } from "@/lib/utils";
 
+import { usePathname } from "next/navigation";
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { sidebarOpen } = useUIStore();
+  const pathname = usePathname();
+  const isHub = pathname === "/hub";
+
+  if (isHub) {
+    return <div className="min-h-screen bg-background">{children}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">

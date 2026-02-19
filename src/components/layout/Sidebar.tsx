@@ -13,6 +13,8 @@ import {
   Landmark,
   Calculator,
   Settings,
+  Files,
+  CreditCard,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -40,6 +42,8 @@ const navGroups = [
   {
     label: "Parametres",
     items: [
+      { label: "Documents", href: "/documents", icon: Files },
+      { label: "Facturation", href: "/billing", icon: CreditCard },
       { label: "Reglages", href: "/settings/company", icon: Settings },
     ],
   },

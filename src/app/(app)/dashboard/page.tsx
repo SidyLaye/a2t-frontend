@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { RevenueChart } from "@/components/charts/RevenueChart";
 import { CashflowChart } from "@/components/charts/CashflowChart";
+import { PredictiveChart } from "@/components/charts/PredictiveChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatusBadge } from "@/components/shared/StatusBadge";
@@ -22,6 +23,7 @@ import {
   Landmark,
   FileText,
   Plus,
+  Zap,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -49,6 +51,12 @@ export default function DashboardPage() {
   const { data: overdue } = useQuery({
     queryKey: queryKeys.dashboardOverdue(tid),
     queryFn: dashboardApi.overdueInvoices,
+    enabled: !!tid,
+  });
+
+  const { data: predictive } = useQuery({
+    queryKey: ["dashboard", tid, "predictive"],
+    queryFn: () => dashboardApi.predictive(30),
     enabled: !!tid,
   });
 
@@ -113,6 +121,28 @@ export default function DashboardPage() {
           />
         </div>
       )}
+
+      {/* Predictive Treasury */}
+      <Card className="border-indigo-100 dark:border-indigo-900 shadow-sm bg-gradient-to-br from-indigo-50/50 to-transparent dark:from-indigo-950/10">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-indigo-700 dark:text-indigo-400">
+            <Zap className="h-4 w-4" />
+            Trésorerie Prévisionnelle (J+30)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {predictive ? (
+            <div className="h-[250px] w-full">
+              <PredictiveChart data={predictive} />
+            </div>
+          ) : (
+            <Skeleton className="h-[250px] w-full rounded-lg" />
+          )}
+          <p className="text-[11px] text-muted-foreground mt-4 italic">
+            Projection calculée à partir de vos factures en attente et dépenses validées non encore payées.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function TenantSwitcher() {
   const { entrepreneurRoles } = useAuthStore();
@@ -38,6 +39,17 @@ export function TenantSwitcher() {
             {id.slice(0, 8)}... ({entrepreneurRoles[id]})
           </SelectItem>
         ))}
+        <div className="border-t mt-1 pt-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start px-2 h-8 text-xs font-medium text-indigo-600 dark:text-indigo-400"
+            onClick={() => (window.location.href = "/hub")}
+          >
+            <Building2 className="h-3 w-3 mr-2" />
+            Changer de dossier
+          </Button>
+        </div>
       </SelectContent>
     </Select>
   );
