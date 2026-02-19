@@ -58,7 +58,7 @@ export default function HubPage() {
               <Button
                 variant="outline"
                 className="gap-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50"
-                onClick={() => router.push("/admin")}
+                onClick={() => router.push("/cabinet")}
               >
                 <Zap className="h-4 w-4 fill-current" />
                 Management Cabinet
