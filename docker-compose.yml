@@ -12,6 +12,7 @@ services:
       - dokploy-network
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.routers.mourad-frontend.rule=Host(`mourad-frontend-kdtphq-252ff4-51-178-81-232.traefik.me`)"
       - "traefik.http.routers.mourad-frontend.entrypoints=web"
       - "traefik.http.services.mourad-frontend.loadbalancer.server.port=3000"
