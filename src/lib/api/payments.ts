@@ -27,5 +27,14 @@ export const paymentsApi = {
     apiClient.post<{ url: string }>("/api/v1/payments/checkout/", { plan_id: planId }).then((r) => r.data),
 
   createPortal: () =>
-    apiClient.post<{ url: string }>("/api/v1/payments/portal/", {}).then((r) => r.data),
+    apiClient.post<{ url: string; portal_url: string }>("/api/v1/payments/portal/", {}).then((r) => {
+      // Return both names for compatibility with different frontend components
+      return { ...r.data, portal_url: r.data.url };
+    }),
+
+  // Alias for compatibility with legacy components
+  customerPortal: () =>
+    apiClient.post<{ url: string; portal_url: string }>("/api/v1/payments/portal/", {}).then((r) => {
+      return { ...r.data, portal_url: r.data.url };
+    }),
 };
