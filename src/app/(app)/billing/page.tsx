@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { PageHeader } from "@/components/layout/PageHeader";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +42,22 @@ export default function BillingPage() {
         }
     });
 
-    if (!tid) return <div>Sélectionnez une entreprise.</div>;
+    if (!tid) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 px-4 text-center">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                    <CreditCard className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <div className="space-y-1">
+                    <h3 className="text-lg font-medium">Gestion de la facturation</h3>
+                    <p className="text-muted-foreground">Veuillez selectionner une entreprise dans le Hub pour gerer son abonnement.</p>
+                </div>
+                <Link href="/hub">
+                    <Button className="bg-indigo-600 hover:bg-indigo-500">Retour au Hub</Button>
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

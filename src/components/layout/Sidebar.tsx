@@ -44,7 +44,7 @@ const navGroups = [
     items: [
       { label: "Documents", href: "/documents", icon: Files },
       { label: "Facturation", href: "/billing", icon: CreditCard },
-      { label: "Reglages", href: "/settings/company", icon: Settings },
+      { label: "Reglages", href: "/settings", icon: Settings },
     ],
   },
 ];

@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, ExternalLink, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { Search, ExternalLink, AlertCircle, CheckCircle2, Clock, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import Link from "next/link";
@@ -33,11 +33,18 @@ export default function AdminDashboardPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <PageHeader
-                title="Management Cabinet"
-                description="Vue d'ensemble de tous les dossiers clients"
-            />
+        <div className="max-w-7xl mx-auto space-y-6">
+            <div className="flex items-center justify-between">
+                <PageHeader
+                    title="Management Cabinet"
+                    description="Vue d'ensemble de tous les dossiers clients"
+                />
+                <Link href="/hub">
+                    <Button variant="outline" size="sm">
+                        <ArrowLeft className="h-4 w-4 mr-2" /> Retour au Hub
+                    </Button>
+                </Link>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>

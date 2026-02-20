@@ -54,12 +54,12 @@ export function TopBar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem asChild>
-              <Link href="/settings/company" className="flex items-center gap-2">
+              <Link href="/profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" /> Profil
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/settings/billing" className="flex items-center gap-2">
+              <Link href="/billing" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" /> Abonnement
               </Link>
             </DropdownMenuItem>

@@ -11,9 +11,9 @@ import { usePathname } from "next/navigation";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { sidebarOpen } = useUIStore();
   const pathname = usePathname();
-  const isHub = pathname === "/hub";
+  const isGlobalView = pathname === "/hub" || pathname === "/cabinet" || pathname === "/register-company" || pathname === "/profile";
 
-  if (isHub) {
+  if (isGlobalView) {
     return <div className="min-h-screen bg-background">{children}</div>;
   }
 

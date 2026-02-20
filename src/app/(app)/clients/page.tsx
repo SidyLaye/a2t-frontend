@@ -72,8 +72,17 @@ export default function ClientsPage() {
 
   if (!tid) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-muted-foreground">Selectionnez une entreprise pour continuer.</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+          <Search className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <div className="text-center">
+          <h3 className="text-lg font-medium">Aucun dossier selectionne</h3>
+          <p className="text-muted-foreground">Selectionnez une entreprise dans le Hub pour gerer ses clients.</p>
+        </div>
+        <Link href="/hub">
+          <Button className="bg-indigo-600 hover:bg-indigo-500">Aller au Hub</Button>
+        </Link>
       </div>
     );
   }
