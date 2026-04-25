@@ -10,7 +10,7 @@ RUN npm ci
 
 COPY . .
 # VITE_* env vars are baked at build time. Provide them via --build-arg.
-ARG VITE_API_URL=https://mourad-backend-jynoeg-0c01a9-51-178-81-232.traefik.me
+ARG VITE_API_URL=http://mourad-backend-jynoeg-0c01a9-51-178-81-232.traefik.me
 ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
