@@ -72,6 +72,11 @@ export interface Entrepreneur {
 
 // ─── Clients ───────────────────────────────────────────────────────────────
 
+export type ClientStatus = "active" | "in_creation" | "suspended" | "closed" | "archived";
+export type TaxRegime = "reel_normal" | "reel_simplifie" | "micro" | "franchise";
+export type VATRegime = "reel_normal" | "reel_simplifie" | "franchise";
+export type VATFrequency = "monthly" | "quarterly" | "yearly";
+
 export interface Client {
   id: UUID;
   company_name: string;
@@ -80,17 +85,31 @@ export interface Client {
   email: string;
   phone: string;
   siren: string;
+  siret: string;
   vat_number: string;
+  legal_form: string;
+  business_activity: string;
   address_line1: string;
   address_line2: string;
   postal_code: string;
   city: string;
   country: string;
+  status: ClientStatus;
+  tax_regime: TaxRegime | "";
+  vat_regime: VATRegime | "";
+  vat_frequency: VATFrequency | "";
+  fiscal_year_end: ISODate | null;
+  assigned_user: UUID | null;
+  assigned_user_email: string | null;
+  notes: string;
   created_at: ISODatetime;
   updated_at: ISODatetime;
 }
 
-export type ClientCreatePayload = Omit<Client, "id" | "created_at" | "updated_at">;
+export type ClientCreatePayload = Omit<
+  Client,
+  "id" | "created_at" | "updated_at" | "assigned_user_email"
+>;
 
 // ─── Invoices ──────────────────────────────────────────────────────────────
 
@@ -207,6 +226,203 @@ export interface DashboardSummary {
   overdue_invoices: { total_amount: DecimalString; count: number };
   bank_balance: DecimalString;
   pending_quotes: { total_amount: DecimalString; count: number };
+}
+
+// ─── Documents ─────────────────────────────────────────────────────────────
+
+export type DocumentStatus =
+  | "received"
+  | "under_review"
+  | "validated"
+  | "rejected"
+  | "incomplete"
+  | "archived";
+
+export type DocumentCategory =
+  | "bank_statement"
+  | "purchase_invoice"
+  | "sales_invoice"
+  | "contract"
+  | "id_document"
+  | "rib"
+  | "tax_document"
+  | "other";
+
+export interface DocumentItem {
+  id: UUID;
+  client: UUID;
+  client_name: string;
+  document_request: UUID | null;
+  file_url: string | null;
+  file_name: string;
+  original_file_name: string;
+  mime_type: string;
+  size_bytes: number;
+  category: DocumentCategory;
+  period_month: number | null;
+  period_year: number | null;
+  status: DocumentStatus;
+  visible_to_client: boolean;
+  internal_comment: string;
+  client_comment: string;
+  uploaded_by: UUID | null;
+  reviewed_by: UUID | null;
+  reviewed_at: ISODatetime | null;
+  created_at: ISODatetime;
+  updated_at: ISODatetime;
+}
+
+// ─── Document Requests ────────────────────────────────────────────────────
+
+export type DocumentRequestStatus =
+  | "draft"
+  | "sent"
+  | "seen"
+  | "partially_completed"
+  | "completed"
+  | "overdue"
+  | "cancelled";
+
+export type Priority = "low" | "normal" | "high" | "urgent";
+
+export interface DocumentRequest {
+  id: UUID;
+  client: UUID;
+  client_name: string;
+  title: string;
+  description: string;
+  requested_type: string;
+  due_date: ISODate | null;
+  priority: Priority;
+  status: DocumentRequestStatus;
+  last_reminder_at: ISODatetime | null;
+  reminder_count: number;
+  created_by: UUID | null;
+  created_at: ISODatetime;
+  updated_at: ISODatetime;
+}
+
+export type DocumentRequestCreatePayload = Pick<
+  DocumentRequest,
+  "client" | "title" | "description" | "requested_type" | "due_date" | "priority"
+> &
+  Partial<Pick<DocumentRequest, "status">>;
+
+// ─── Messages ──────────────────────────────────────────────────────────────
+
+export interface Message {
+  id: UUID;
+  client: UUID;
+  client_name: string;
+  sender: UUID | null;
+  sender_email: string;
+  sender_name: string;
+  body: string;
+  is_internal: boolean;
+  related_document: UUID | null;
+  related_request: UUID | null;
+  read_at: ISODatetime | null;
+  created_at: ISODatetime;
+}
+
+export interface MessageCreatePayload {
+  client: UUID;
+  body: string;
+  is_internal?: boolean;
+  related_document?: UUID | null;
+  related_request?: UUID | null;
+}
+
+// ─── Tasks ────────────────────────────────────────────────────────────────
+
+export type TaskStatus = "todo" | "in_progress" | "blocked" | "done" | "cancelled";
+
+export interface Task {
+  id: UUID;
+  title: string;
+  description: string;
+  category: string;
+  client: UUID | null;
+  client_name: string;
+  assigned_to: UUID | null;
+  assigned_to_email: string | null;
+  created_by: UUID | null;
+  priority: Priority;
+  status: TaskStatus;
+  due_date: ISODate | null;
+  completed_at: ISODatetime | null;
+  created_at: ISODatetime;
+  updated_at: ISODatetime;
+}
+
+export interface TaskCreatePayload {
+  title: string;
+  description?: string;
+  category?: string;
+  client?: UUID | null;
+  assigned_to?: UUID | null;
+  priority?: Priority;
+  status?: TaskStatus;
+  due_date?: ISODate | null;
+}
+
+// ─── Deadlines ────────────────────────────────────────────────────────────
+
+export type DeadlineType =
+  | "vat_declaration"
+  | "vat_payment"
+  | "corporate_tax"
+  | "income_tax"
+  | "social_declaration"
+  | "fiscal_balance"
+  | "urssaf"
+  | "other";
+
+export type DeadlineStatus =
+  | "to_prepare"
+  | "awaiting_documents"
+  | "ready"
+  | "sent"
+  | "validated"
+  | "overdue";
+
+export interface Deadline {
+  id: UUID;
+  title: string;
+  type: DeadlineType;
+  client: UUID;
+  client_name: string;
+  assigned_to: UUID | null;
+  assigned_to_email: string | null;
+  due_date: ISODate;
+  status: DeadlineStatus;
+  notes: string;
+  vat_declaration: UUID | null;
+  completed_at: ISODatetime | null;
+  created_at: ISODatetime;
+  updated_at: ISODatetime;
+}
+
+export interface DeadlineCreatePayload {
+  title: string;
+  type: DeadlineType;
+  client: UUID;
+  due_date: ISODate;
+  status?: DeadlineStatus;
+  assigned_to?: UUID | null;
+  notes?: string;
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────
+
+export interface AppNotification {
+  id: UUID;
+  user: UUID;
+  title: string;
+  message: string;
+  is_read: boolean;
+  link: string;
+  created_at: ISODatetime;
 }
 
 // ─── Pagination ────────────────────────────────────────────────────────────

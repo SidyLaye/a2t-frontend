@@ -3,17 +3,27 @@
 // and surfaces backend validation errors in a usable shape.
 
 import type {
+  AppNotification,
   Client,
   ClientCreatePayload,
   DashboardSummary,
+  Deadline,
+  DeadlineCreatePayload,
+  DocumentItem,
+  DocumentRequest,
+  DocumentRequestCreatePayload,
   Entrepreneur,
   Invoice,
   InvoiceCreatePayload,
   JWTPair,
   LoginResponse,
   MeResponse,
+  Message,
+  MessageCreatePayload,
   Paginated,
   Quote,
+  Task,
+  TaskCreatePayload,
   UUID,
 } from "./api-types";
 
@@ -288,7 +298,155 @@ export const dashboard = {
   overdueInvoices: () => request<Invoice[]>("/api/v1/dashboard/overdue-invoices/"),
 };
 
+// ─── Documents ─────────────────────────────────────────────────────────────
+
+export const documents = {
+  list: (params?: {
+    search?: string;
+    status?: string;
+    category?: string;
+    client?: UUID;
+    document_request?: UUID;
+    period_year?: number;
+    period_month?: number;
+    page?: number;
+  }) => request<Paginated<DocumentItem>>("/api/v1/documents/", { query: params }),
+  retrieve: (id: UUID) => request<DocumentItem>(`/api/v1/documents/${id}/`),
+  upload: (params: {
+    file: File;
+    client: UUID;
+    category?: string;
+    period_month?: number;
+    period_year?: number;
+    document_request?: UUID;
+    visible_to_client?: boolean;
+    internal_comment?: string;
+  }) => {
+    const fd = new FormData();
+    fd.append("file", params.file);
+    fd.append("file_name", params.file.name);
+    fd.append("client", params.client);
+    if (params.category) fd.append("category", params.category);
+    if (params.period_month != null) fd.append("period_month", String(params.period_month));
+    if (params.period_year != null) fd.append("period_year", String(params.period_year));
+    if (params.document_request) fd.append("document_request", params.document_request);
+    if (params.visible_to_client !== undefined)
+      fd.append("visible_to_client", String(params.visible_to_client));
+    if (params.internal_comment) fd.append("internal_comment", params.internal_comment);
+    return request<DocumentItem>("/api/v1/documents/", { method: "POST", body: fd });
+  },
+  update: (
+    id: UUID,
+    payload: Partial<Pick<DocumentItem, "category" | "period_month" | "period_year" | "internal_comment" | "client_comment" | "visible_to_client">>,
+  ) => request<DocumentItem>(`/api/v1/documents/${id}/`, { method: "PATCH", body: payload }),
+  remove: (id: UUID) => request<void>(`/api/v1/documents/${id}/`, { method: "DELETE" }),
+  review: (
+    id: UUID,
+    decision: "validate" | "reject" | "incomplete",
+    internal_comment?: string,
+  ) =>
+    request<DocumentItem>(`/api/v1/documents/${id}/review/`, {
+      method: "POST",
+      body: { decision, internal_comment: internal_comment ?? "" },
+    }),
+};
+
+// ─── Document Requests ────────────────────────────────────────────────────
+
+export const documentRequests = {
+  list: (params?: { search?: string; status?: string; priority?: string; client?: UUID; page?: number }) =>
+    request<Paginated<DocumentRequest>>("/api/v1/document-requests/", { query: params }),
+  retrieve: (id: UUID) => request<DocumentRequest>(`/api/v1/document-requests/${id}/`),
+  create: (payload: DocumentRequestCreatePayload) =>
+    request<DocumentRequest>("/api/v1/document-requests/", { method: "POST", body: payload }),
+  update: (id: UUID, payload: Partial<DocumentRequestCreatePayload>) =>
+    request<DocumentRequest>(`/api/v1/document-requests/${id}/`, { method: "PATCH", body: payload }),
+  remove: (id: UUID) => request<void>(`/api/v1/document-requests/${id}/`, { method: "DELETE" }),
+  remind: (id: UUID) =>
+    request<DocumentRequest>(`/api/v1/document-requests/${id}/remind/`, { method: "POST" }),
+};
+
+// ─── Messages ──────────────────────────────────────────────────────────────
+
+export const messages = {
+  list: (params?: { client?: UUID; is_internal?: boolean; search?: string; page?: number }) =>
+    request<Paginated<Message>>("/api/v1/messages/", { query: params }),
+  retrieve: (id: UUID) => request<Message>(`/api/v1/messages/${id}/`),
+  create: (payload: MessageCreatePayload) =>
+    request<Message>("/api/v1/messages/", { method: "POST", body: payload }),
+  remove: (id: UUID) => request<void>(`/api/v1/messages/${id}/`, { method: "DELETE" }),
+  markRead: (id: UUID) =>
+    request<Message>(`/api/v1/messages/${id}/read/`, { method: "POST" }),
+  markAllRead: (client?: UUID) =>
+    request<{ marked: number }>("/api/v1/messages/mark-all-read/", {
+      method: "POST",
+      body: client ? { client } : undefined,
+    }),
+};
+
+// ─── Tasks ────────────────────────────────────────────────────────────────
+
+export const tasks = {
+  list: (params?: {
+    search?: string;
+    status?: string;
+    priority?: string;
+    client?: UUID;
+    assigned_to?: UUID;
+    page?: number;
+  }) => request<Paginated<Task>>("/api/v1/tasks/", { query: params }),
+  retrieve: (id: UUID) => request<Task>(`/api/v1/tasks/${id}/`),
+  create: (payload: TaskCreatePayload) =>
+    request<Task>("/api/v1/tasks/", { method: "POST", body: payload }),
+  update: (id: UUID, payload: Partial<TaskCreatePayload>) =>
+    request<Task>(`/api/v1/tasks/${id}/`, { method: "PATCH", body: payload }),
+  remove: (id: UUID) => request<void>(`/api/v1/tasks/${id}/`, { method: "DELETE" }),
+  complete: (id: UUID) =>
+    request<Task>(`/api/v1/tasks/${id}/complete/`, { method: "POST" }),
+};
+
+// ─── Deadlines ────────────────────────────────────────────────────────────
+
+export const deadlines = {
+  list: (params?: { search?: string; status?: string; type?: string; client?: UUID; page?: number }) =>
+    request<Paginated<Deadline>>("/api/v1/deadlines/", { query: params }),
+  retrieve: (id: UUID) => request<Deadline>(`/api/v1/deadlines/${id}/`),
+  create: (payload: DeadlineCreatePayload) =>
+    request<Deadline>("/api/v1/deadlines/", { method: "POST", body: payload }),
+  update: (id: UUID, payload: Partial<DeadlineCreatePayload>) =>
+    request<Deadline>(`/api/v1/deadlines/${id}/`, { method: "PATCH", body: payload }),
+  remove: (id: UUID) => request<void>(`/api/v1/deadlines/${id}/`, { method: "DELETE" }),
+  complete: (id: UUID) =>
+    request<Deadline>(`/api/v1/deadlines/${id}/complete/`, { method: "POST" }),
+};
+
+// ─── Notifications ────────────────────────────────────────────────────────
+
+export const notifications = {
+  list: () =>
+    request<Paginated<AppNotification> | AppNotification[]>("/api/v1/notifications/"),
+  markRead: (id: UUID) =>
+    request<AppNotification>(`/api/v1/notifications/${id}/read/`, { method: "PATCH" }),
+  markAllRead: () =>
+    request<{ marked_read: number }>("/api/v1/notifications/mark-all-read/", {
+      method: "POST",
+    }),
+};
+
 // ─── default export ────────────────────────────────────────────────────────
 
-export const api = { auth, entrepreneurs, clients, invoices, quotes, dashboard };
+export const api = {
+  auth,
+  entrepreneurs,
+  clients,
+  invoices,
+  quotes,
+  dashboard,
+  documents,
+  documentRequests,
+  messages,
+  tasks,
+  deadlines,
+  notifications,
+};
 export { API_URL };
