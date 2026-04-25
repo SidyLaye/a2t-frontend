@@ -6,10 +6,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://mourad-backend-jynoeg-0c01a9-51-178-81-232.traefik.me
     expose:
       - "80"
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - VITE_API_URL=https://mourad-backend-jynoeg-0c01a9-51-178-81-232.traefik.me
     restart: unless-stopped
 
   # Development service (uses Vite dev server)
