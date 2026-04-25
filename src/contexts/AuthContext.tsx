@@ -42,11 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // (or honor the env override during dev).
       const stored = entrepreneurStore.get();
       const envDefault = import.meta.env.VITE_DEFAULT_ENTREPRENEUR_ID as string | undefined;
+
+      // Validate stored ID against current roles (may be stale after DB reset)
+      const storedIsValid = stored && me.roles.some((r) => r.entrepreneur === stored && r.is_active);
       const candidate =
-        stored ||
+        (storedIsValid ? stored : null) ||
         envDefault ||
         me.roles.find((r) => r.is_active)?.entrepreneur ||
         null;
+
       if (candidate && candidate !== stored) {
         entrepreneurStore.set(candidate);
         setActiveEntrepreneurIdState(candidate);
