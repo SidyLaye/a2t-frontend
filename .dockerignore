@@ -1,0 +1,11 @@
+node_modules
+dist
+.next
+.next_old
+node_modules_old
+src-tauri/target
+target
+.git
+.env
+.env.local
+*.log

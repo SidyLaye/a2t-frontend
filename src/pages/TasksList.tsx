@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { mockTasks, getStatusBadge, statusLabels } from "@/lib/mock-data";
+import { BackendNotice } from "@/components/BackendNotice";
 
 export default function TasksList() {
   const [search, setSearch] = useState("");
@@ -17,6 +18,10 @@ export default function TasksList() {
 
   return (
     <div className="space-y-5">
+      <BackendNotice>
+        Les tâches sont affichées avec des données de démonstration. Le backend Django ne
+        propose pas encore d'API <code>/api/v1/tasks/</code>.
+      </BackendNotice>
       <div className="page-header">
         <div>
           <h1 className="text-2xl font-semibold">Tâches</h1>

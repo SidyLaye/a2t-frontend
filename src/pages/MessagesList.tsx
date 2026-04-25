@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { mockMessages, mockClients } from "@/lib/mock-data";
+import { BackendNotice } from "@/components/BackendNotice";
 
 export default function MessagesList() {
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
@@ -22,6 +23,7 @@ export default function MessagesList() {
 
   return (
     <div className="space-y-5">
+      <BackendNotice>Données de démonstration — pas encore d'API messagerie côté Django.</BackendNotice>
       <div className="page-header">
         <div>
           <h1 className="text-2xl font-semibold">Messages</h1>

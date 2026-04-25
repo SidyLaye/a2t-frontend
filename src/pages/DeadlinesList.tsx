@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockDeadlines, getStatusBadge, statusLabels } from "@/lib/mock-data";
+import { BackendNotice } from "@/components/BackendNotice";
 
 export default function DeadlinesList() {
   const [statusFilter, setStatusFilter] = useState("all");
@@ -34,6 +35,7 @@ export default function DeadlinesList() {
 
   return (
     <div className="space-y-5">
+      <BackendNotice>Données de démonstration — l'API échéances n'existe pas encore côté Django.</BackendNotice>
       <div className="page-header">
         <div>
           <h1 className="text-2xl font-semibold">Échéances</h1>

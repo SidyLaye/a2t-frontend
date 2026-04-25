@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockRequests, getStatusBadge, statusLabels } from "@/lib/mock-data";
+import { BackendNotice } from "@/components/BackendNotice";
 
 export default function RequestsList() {
   const [search, setSearch] = useState("");
@@ -18,6 +19,7 @@ export default function RequestsList() {
 
   return (
     <div className="space-y-5">
+      <BackendNotice>Données de démonstration — pas encore d'API backend pour les demandes.</BackendNotice>
       <div className="page-header">
         <div>
           <h1 className="text-2xl font-semibold">Demandes de documents</h1>
