@@ -127,8 +127,9 @@ export default function CreateInvoice() {
           <h1 className="text-2xl font-semibold">Nouvelle facture</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Le numero de facture est genere a la validation
-          </p>
+</p>
         </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
@@ -197,6 +198,7 @@ export default function CreateInvoice() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
+              </div>
             ))}
           </CardContent>
         </Card>
