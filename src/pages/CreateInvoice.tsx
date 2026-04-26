@@ -52,6 +52,10 @@ export default function CreateInvoice() {
     retry: false,
   });
 
+  const clientsList = Array.isArray(clientsQuery.data)
+    ? clientsQuery.data
+    : (clientsQuery.data?.results ?? []);
+
   const [client, setClient] = useState<string>("");
   const [issueDate, setIssueDate] = useState(today());
   const [dueDate, setDueDate] = useState(inDays(30));
@@ -79,17 +83,17 @@ export default function CreateInvoice() {
   const mutation = useMutation<Invoice, ApiError, InvoiceCreatePayload>({
     mutationFn: (payload) => api.invoices.create(payload),
     onSuccess: (created) => {
-      toast.success("Facture créée");
+      toast.success("Facture creee");
       qc.invalidateQueries({ queryKey: ["invoices"] });
-      navigate(`/factures/${created.id}`);
+      navigate("/factures/" + created.id);
     },
-    onError: (err) => toast.error("Création impossible", { description: err.message }),
+    onError: (err) => toast.error("Creation impossible", { description: err.message }),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!client) {
-      toast.error("Sélectionnez un client.");
+      toast.error("Selectionnez un client.");
       return;
     }
     if (lines.some((l) => !l.description.trim())) {
@@ -122,10 +126,9 @@ export default function CreateInvoice() {
         <div>
           <h1 className="text-2xl font-semibold">Nouvelle facture</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Le numéro de facture est généré à la validation
+            Le numero de facture est genere a la validation
           </p>
         </div>
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
@@ -137,23 +140,23 @@ export default function CreateInvoice() {
               <Label>Client *</Label>
               <Select value={client} onValueChange={setClient}>
                 <SelectTrigger>
-                  <SelectValue placeholder={clientsQuery.isLoading ? "Chargement..." : "Sélectionner un client"} />
+                  <SelectValue placeholder={clientsQuery.isLoading ? "Chargement..." : "Selectionner un client"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {clientsQuery.data?.results.map((c) => (
+                  {clientsList.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
-                      {c.company_name || `${c.first_name} ${c.last_name}`} · {c.email}
+                      {(c.company_name || c.first_name + " " + c.last_name) + " · " + c.email}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Date d'émission *</Label>
+              <Label>Date d&apos;emission *</Label>
               <Input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} required />
             </div>
             <div>
-              <Label>Date d'échéance *</Label>
+              <Label>Date d&apos;echeance *</Label>
               <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
             </div>
           </CardContent>
@@ -162,12 +165,7 @@ export default function CreateInvoice() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Lignes</CardTitle>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => setLines((p) => [...p, newLine()])}
-            >
+            <Button type="button" size="sm" variant="outline" onClick={() => setLines((p) => [...p, newLine()])}>
               <Plus className="h-3.5 w-3.5 mr-1.5" /> Ajouter une ligne
             </Button>
           </CardHeader>
@@ -176,51 +174,26 @@ export default function CreateInvoice() {
               <div key={l.id} className="grid grid-cols-12 gap-2 items-end">
                 <div className="col-span-12 md:col-span-5">
                   <Label className="text-xs">Description</Label>
-                  <Input
-                    value={l.description}
-                    onChange={(e) => updateLine(l.id, { description: e.target.value })}
-                    required
-                  />
+                  <Input value={l.description} onChange={(e) => updateLine(l.id, { description: e.target.value })} required />
                 </div>
                 <div className="col-span-3 md:col-span-1">
-                  <Label className="text-xs">Qté</Label>
-                  <Input
-                    type="number"
-                    step="0.001"
-                    value={l.quantity}
-                    onChange={(e) => updateLine(l.id, { quantity: parseFloat(e.target.value) || 0 })}
-                  />
+                  <Label className="text-xs">Qte</Label>
+                  <Input type="number" step="0.001" value={l.quantity} onChange={(e) => updateLine(l.id, { quantity: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <div className="col-span-3 md:col-span-2">
-                  <Label className="text-xs">Unité</Label>
+                  <Label className="text-xs">Unite</Label>
                   <Input value={l.unit} onChange={(e) => updateLine(l.id, { unit: e.target.value })} />
                 </div>
                 <div className="col-span-3 md:col-span-2">
                   <Label className="text-xs">PU HT</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={l.unit_price_ht}
-                    onChange={(e) => updateLine(l.id, { unit_price_ht: parseFloat(e.target.value) || 0 })}
-                  />
+                  <Input type="number" step="0.01" value={l.unit_price_ht} onChange={(e) => updateLine(l.id, { unit_price_ht: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <Label className="text-xs">TVA %</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    value={l.vat_rate}
-                    onChange={(e) => updateLine(l.id, { vat_rate: parseFloat(e.target.value) || 0 })}
-                  />
+                  <Input type="number" step="0.1" value={l.vat_rate} onChange={(e) => updateLine(l.id, { vat_rate: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <div className="col-span-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeLine(l.id)}
-                    disabled={lines.length === 1}
-                  >
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeLine(l.id)} disabled={lines.length === 1}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -230,50 +203,27 @@ export default function CreateInvoice() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Notes &amp; conditions</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">Notes &amp; conditions</CardTitle></CardHeader>
           <CardContent className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <Label>Notes</Label>
-              <Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
-            </div>
-            <div>
-              <Label>Conditions de règlement</Label>
-              <Textarea rows={3} value={terms} onChange={(e) => setTerms(e.target.value)} />
-            </div>
+            <div><Label>Notes</Label><Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
+            <div><Label>Conditions de reglement</Label><Textarea rows={3} value={terms} onChange={(e) => setTerms(e.target.value)} /></div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-4 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Total HT</span>
-              <span>{fmt(totals.ht)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">TVA</span>
-              <span>{fmt(totals.vat)}</span>
-            </div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Total HT</span><span>{fmt(totals.ht)}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">TVA</span><span>{fmt(totals.vat)}</span></div>
             <Separator />
-            <div className="flex justify-between font-semibold text-base">
-              <span>Total TTC</span>
-              <span>{fmt(totals.ttc)}</span>
-            </div>
+            <div className="flex justify-between font-semibold text-base"><span>Total TTC</span><span>{fmt(totals.ttc)}</span></div>
           </CardContent>
         </Card>
 
         <div className="flex items-center justify-end gap-3 pt-2">
-          <Button type="button" variant="outline" onClick={() => navigate(-1)}>
-            Annuler
-          </Button>
+          <Button type="button" variant="outline" onClick={() => navigate(-1)}>Annuler</Button>
           <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? (
-              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 mr-1.5" />
-            )}
-            Créer la facture
+            {mutation.isPending ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Save className="h-4 w-4 mr-1.5" />}
+            Creer la facture
           </Button>
         </div>
       </form>
