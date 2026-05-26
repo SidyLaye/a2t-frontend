@@ -17,10 +17,13 @@ export const adminApi = {
     apiClient.get<AdminEntrepreneur>(`${BASE}/entrepreneurs/${id}/`).then((r) => r.data),
 
   toggleEntrepreneur: (id: string, isActive?: boolean) =>
-    apiClient.patch(`${BASE}/entrepreneurs/${id}/toggle/`, { is_active: isActive }),
+    apiClient.patch(`${BASE}/entrepreneurs/${id}/`, { is_active: isActive }),
 
   users: (params?: ListParams) =>
     apiClient.get<PaginatedResponse<User>>(`${BASE}/users/`, { params }).then((r) => r.data),
+
+  createUser: (payload: { email: string; role?: string; entrepreneur?: string }) =>
+    apiClient.post<User & { temp_password: string }>(`${BASE}/users/`, payload).then((r) => r.data),
 
   growth: () =>
     apiClient.get<ChartDataPoint[]>(`${BASE}/growth/`).then((r) => r.data),
