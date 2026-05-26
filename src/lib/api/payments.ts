@@ -19,23 +19,22 @@ export interface Subscription {
 
 export const paymentsApi = {
   listPlans: () =>
-    apiClient.get<SubscriptionPlan[]>("/api/v1/payments/plans/").then((r) => r.data),
+    apiClient.get<SubscriptionPlan[]>("/api/v1/subscriptions/plans/").then((r) => r.data),
 
   currentSubscription: () =>
-    apiClient.get<Subscription>("/api/v1/payments/subscriptions/current/").then((r) => r.data),
+    apiClient.get<Subscription>("/api/v1/subscriptions/current/").then((r) => r.data),
 
   createCheckout: (planId: string) =>
-    apiClient.post<{ url: string }>("/api/v1/payments/checkout/", { plan_id: planId }).then((r) => r.data),
+    apiClient.post<{ url: string }>("/api/v1/subscriptions/checkout/", { plan_id: planId }).then((r) => r.data),
 
   createPortal: () =>
-    apiClient.post<{ url: string; portal_url: string }>("/api/v1/payments/portal/", {}).then((r) => {
-      // Return both names for compatibility with different frontend components
+    apiClient.post<{ url: string; portal_url: string }>("/api/v1/subscriptions/portal/", {}).then((r) => {
       return { ...r.data, portal_url: r.data.url };
     }),
 
   // Alias for compatibility with legacy components
   customerPortal: () =>
-    apiClient.post<{ url: string; portal_url: string }>("/api/v1/payments/portal/", {}).then((r) => {
+    apiClient.post<{ url: string; portal_url: string }>("/api/v1/subscriptions/portal/", {}).then((r) => {
       return { ...r.data, portal_url: r.data.url };
     }),
 };
